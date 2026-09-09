@@ -47,11 +47,11 @@ ASP.NET Core 9 API         Auth, report metadata, chat history, business logic
 
 | Requirement | Version used | Notes |
 |---|---|---|
-| [Foundry Local](https://learn.microsoft.com/azure/ai-foundry/foundry-local/) | 0.10.3 | Required. Runs on the host, not in Docker. |
+| [Foundry Local](https://learn.microsoft.com/azure/ai-foundry/foundry-local/) | 0.10.3 | Required. Runs as a desktop service on the host. |
 | Python | 3.12+ | 3.13 works; see note on ChromaDB below. |
 | .NET SDK | 9.0 | |
 | Node.js | 22 | |
-| Docker Desktop | 28+ | For PostgreSQL, or the whole stack. |
+| PostgreSQL | 16 | Backend persistence. |
 
 ---
 
@@ -121,15 +121,13 @@ To rebuild the index after changing chunking, extraction or embedding settings:
 
 Run this with the AI service stopped — the embedded ChromaDB store is
 single-writer, so the service and the ingestion script cannot hold it at once.
-(Under Docker Compose, ChromaDB runs as a server and this restriction does not
-apply.)
 
 ### 5. Start PostgreSQL and the backend
 
 ```bash
-docker run -d --name finrag-postgres \
-  -e POSTGRES_USER=finrag -e POSTGRES_PASSWORD=finrag -e POSTGRES_DB=finrag \
-  -p 5432:5432 postgres:16-alpine
+# One-time setup, run once as a PostgreSQL superuser:
+psql -U postgres -c "CREATE ROLE finrag LOGIN PASSWORD 'finrag';"
+psql -U postgres -c "CREATE DATABASE finrag OWNER finrag;"
 
 cd backend/FinRag.Api
 dotnet run
@@ -154,25 +152,6 @@ demo@finrag.local / demo12345
 
 On the **Reports** page click **Import indexed** once, to bring the documents
 indexed by the CLI into the catalogue.
-
----
-
-## Docker
-
-Foundry Local is deliberately not containerised — it needs direct GPU/NPU access
-and ships as a desktop service. Start it on the host first, then:
-
-```bash
-docker compose up --build
-```
-
-- Frontend → <http://localhost:3000>
-- Backend  → <http://localhost:5080>
-- AI service → <http://localhost:8000>
-- ChromaDB → <http://localhost:8001>
-
-Containers reach Foundry Local through `host.docker.internal`; set
-`FOUNDRY_LOCAL_URL_DOCKER` in `.env` to match the live port.
 
 ---
 

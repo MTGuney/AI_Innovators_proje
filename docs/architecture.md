@@ -190,9 +190,10 @@ Browser ──POST /api/reports/upload──► Backend
                                         └─ writes FinancialReport row → PostgreSQL
 ```
 
-The backend and AI service share the uploads volume **at the same absolute
-path**, because the handoff is a path, not a byte stream. In `docker-compose.yml`
-both mount `report-uploads` at `/app/uploads`.
+The backend and AI service must see the uploads directory **at the same absolute
+path**, because the handoff is a path, not a byte stream. Running both on the
+same host satisfies this: the backend writes to `backend/FinRag.Api/uploads` and
+sends that absolute path, which the AI service then opens directly.
 
 Documents indexed by the CLI bypass this flow entirely, which is why
 `POST /api/reports/sync` exists: it reads the vector index and back-fills the
