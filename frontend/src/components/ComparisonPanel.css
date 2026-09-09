@@ -1,0 +1,36 @@
+.comparison-summary {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
+.comparison-caveat {
+  margin: 10px 0 0;
+  font-size: 11.5px;
+  font-style: italic;
+}
+
+.comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.comparison-facts {
+  margin: 0;
+  padding-left: 17px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.comparison-facts li {
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--c-text);
+}
+
+/* Retrieved facts are quoted verbatim, so mark them as quotations. */
+.comparison-facts li::marker { color: var(--c-success); }

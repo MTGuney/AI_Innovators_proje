@@ -1,0 +1,41 @@
+.company-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.company-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.chip {
+  padding: 5px 12px;
+  border: 1px solid var(--c-border-strong);
+  border-radius: 100px;
+  background: var(--c-surface);
+  color: var(--c-text-muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.14s ease;
+}
+
+.chip:hover:not(:disabled) {
+  border-color: var(--c-accent);
+  color: var(--c-accent);
+}
+
+.chip-active {
+  background: var(--c-accent);
+  border-color: var(--c-accent);
+  color: #fff;
+}
+
+.chip-active:hover:not(:disabled) {
+  background: var(--c-accent-hover);
+  color: #fff;
+}
+
+.chip:disabled { opacity: 0.4; cursor: not-allowed; }

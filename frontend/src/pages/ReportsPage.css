@@ -1,0 +1,34 @@
+.view-toggle {
+  display: inline-flex;
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.view-toggle button {
+  padding: 7px 13px;
+  background: var(--c-surface);
+  border: none;
+  color: var(--c-text-muted);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+
+.view-toggle button + button { border-left: 1px solid var(--c-border-strong); }
+.view-toggle button:hover { background: var(--c-surface-alt); }
+
+.view-toggle button.active {
+  background: var(--c-accent);
+  color: #fff;
+}
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 18px;
+  font-size: 12.5px;
+}

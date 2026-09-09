@@ -1,0 +1,45 @@
+.state-panel {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid;
+  border-radius: var(--radius);
+  font-size: 13px;
+}
+
+.state-error {
+  background: var(--c-danger-soft);
+  border-color: color-mix(in srgb, var(--c-danger) 30%, transparent);
+}
+
+.state-warning {
+  background: var(--c-warning-soft);
+  border-color: color-mix(in srgb, var(--c-warning) 30%, transparent);
+}
+
+.state-icon {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.state-error .state-icon { background: var(--c-danger); }
+.state-warning .state-icon { background: var(--c-warning); }
+
+.state-message {
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.state-hint {
+  font-size: 12px;
+  color: var(--c-text-muted);
+}

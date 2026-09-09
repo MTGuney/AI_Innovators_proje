@@ -1,0 +1,129 @@
+# Financial Report RAG Assistant -- full local stack.
+#
+# Foundry Local is deliberately NOT containerised: it needs direct access to the
+# host GPU/NPU and ships as a desktop service. Containers reach it through
+# host.docker.internal, so start it on the host first:
+#
+#   foundry server start
+#   foundry model load <FOUNDRY_MODEL>
+#   foundry model load <FOUNDRY_EMBEDDING_MODEL>
+#   foundry server status          # note the port -> FOUNDRY_LOCAL_URL
+#
+# Then:  docker compose up --build
+
+name: finrag
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: finrag-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-finrag}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-finrag}
+      POSTGRES_DB: ${POSTGRES_DB:-finrag}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-finrag} -d ${POSTGRES_DB:-finrag}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  chromadb:
+    image: chromadb/chroma:1.0.15
+    container_name: finrag-chroma
+    restart: unless-stopped
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma-data:/data
+    environment:
+      IS_PERSISTENT: "TRUE"
+      ANONYMIZED_TELEMETRY: "FALSE"
+      PERSIST_DIRECTORY: /data
+
+  ai-service:
+    build:
+      context: ./ai-service
+    container_name: finrag-ai
+    restart: unless-stopped
+    depends_on:
+      - chromadb
+    ports:
+      - "8000:8000"
+    environment:
+      CHROMA_URL: http://chromadb:8000
+      CHROMA_COLLECTION: ${CHROMA_COLLECTION:-financial_reports}
+      # Foundry Local runs on the host, not in this network.
+      FOUNDRY_LOCAL_URL: ${FOUNDRY_LOCAL_URL_DOCKER:-http://host.docker.internal:52527}
+      FOUNDRY_MODEL: ${FOUNDRY_MODEL:-qwen2.5-1.5b}
+      FOUNDRY_EMBEDDING_MODEL: ${FOUNDRY_EMBEDDING_MODEL:-qwen3-embedding-0.6b-generic-cpu}
+      FOUNDRY_TIMEOUT_SECONDS: ${FOUNDRY_TIMEOUT_SECONDS:-180}
+      FOUNDRY_MAX_TOKENS: ${FOUNDRY_MAX_TOKENS:-500}
+      FOUNDRY_TEMPERATURE: ${FOUNDRY_TEMPERATURE:-0.1}
+      TOP_K: ${TOP_K:-5}
+      CHUNK_SIZE: ${CHUNK_SIZE:-1200}
+      CHUNK_OVERLAP: ${CHUNK_OVERLAP:-200}
+      SIMILARITY_THRESHOLD: ${SIMILARITY_THRESHOLD:-0.25}
+      MAX_CONTEXT_CHARS: ${MAX_CONTEXT_CHARS:-8000}
+      EMBEDDING_BATCH_SIZE: ${EMBEDDING_BATCH_SIZE:-8}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      # The backend hands over absolute file paths, so the shared uploads volume
+      # must be mounted at the SAME path in both containers.
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - ./ai-service/data/raw:/app/data/raw
+      - report-uploads:/app/uploads
+    extra_hosts:
+      # Required on Linux; a no-op on Docker Desktop, where it already resolves.
+      - "host.docker.internal:host-gateway"
+
+  backend:
+    build:
+      context: ./backend
+    container_name: finrag-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ai-service:
+        condition: service_started
+    ports:
+      - "5080:8080"
+    environment:
+      ConnectionStrings__Default: >-
+        Host=postgres;Port=5432;Database=${POSTGRES_DB:-finrag};Username=${POSTGRES_USER:-finrag};Password=${POSTGRES_PASSWORD:-finrag}
+      AiService__BaseUrl: http://ai-service:8000
+      AiService__TimeoutSeconds: ${AI_SERVICE_TIMEOUT_SECONDS:-240}
+      Jwt__Secret: ${JWT_SECRET:?JWT_SECRET must be set in .env}
+      Jwt__Issuer: ${JWT_ISSUER:-finrag-api}
+      Jwt__Audience: ${JWT_AUDIENCE:-finrag-web}
+      Jwt__ExpiryMinutes: ${JWT_EXPIRY_MINUTES:-720}
+      Cors__AllowedOrigins__0: ${FRONTEND_URL:-http://localhost:3000}
+      Seed__DemoUser: ${SEED_DEMO_USER:-true}
+      Seed__DemoUserEmail: ${DEMO_USER_EMAIL:-demo@finrag.local}
+      Seed__DemoUserPassword: ${DEMO_USER_PASSWORD:-demo12345}
+    volumes:
+      # The backend writes uploads where the AI service can read them.
+      - report-uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        # Baked in at build time: the browser calls the backend directly.
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:5080/api}
+    container_name: finrag-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  postgres-data:
+  chroma-data:
+  report-uploads:

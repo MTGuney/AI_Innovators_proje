@@ -1,0 +1,80 @@
+.chat {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.chat-scroll {
+  flex: 1;
+  min-height: 0;
+  padding: 20px 24px;
+}
+
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.chat-welcome {
+  max-width: 640px;
+  margin: 6vh auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.chat-suggestions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 10px;
+}
+
+.suggestion {
+  padding: 11px 14px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  background: var(--c-surface);
+  color: var(--c-text);
+  font-size: 12.5px;
+  line-height: 1.45;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.14s ease, background 0.14s ease;
+}
+
+.suggestion:hover:not(:disabled) {
+  border-color: var(--c-accent);
+  background: var(--c-accent-soft);
+}
+
+.suggestion:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.chat-error {
+  max-width: 900px;
+  margin: 16px auto 0;
+}
+
+.chat-composer {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  padding: 14px 24px 18px;
+  border-top: 1px solid var(--c-border);
+  background: var(--c-surface);
+}
+
+.chat-composer .textarea {
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.chat-composer .btn { height: 42px; padding-inline: 20px; }
+
+@media (max-width: 720px) {
+  .chat-scroll { padding: 14px; }
+  .chat-composer { padding: 12px 14px; }
+}

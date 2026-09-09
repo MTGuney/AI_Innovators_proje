@@ -1,0 +1,46 @@
+# --- Environment / secrets ---
+.env
+.env.local
+*.env
+!.env.example
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# --- AI service data (documents & vector store are not source code) ---
+ai-service/data/raw/*
+!ai-service/data/raw/.gitkeep
+ai-service/data/chroma/
+ai-service/data/uploads/
+
+# --- .NET ---
+bin/
+obj/
+*.user
+*.suo
+
+# --- Node ---
+node_modules/
+dist/
+dist-ssr/
+.vite/
+*.local
+
+# --- Editors / OS ---
+.vs/
+.idea/
+.vscode/*
+!.vscode/extensions.json
+.DS_Store
+Thumbs.db
+
+# --- Logs ---
+*.log
+logs/

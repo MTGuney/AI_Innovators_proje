@@ -1,0 +1,86 @@
+.login {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  height: 100%;
+}
+
+.login-pitch {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  padding: 6vh 7vw;
+  background: linear-gradient(160deg, var(--c-navy-900), var(--c-navy-700));
+  color: #d6e0ec;
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 16px;
+}
+
+.login-pitch h1 {
+  font-size: 30px;
+  line-height: 1.22;
+  color: #fff;
+  max-width: 15ch;
+}
+
+.login-pitch > p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.65;
+  max-width: 46ch;
+  color: #a9b8ca;
+}
+
+.login-points {
+  margin: 6px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 50ch;
+}
+
+.login-points li {
+  padding-left: 16px;
+  border-left: 2px solid var(--c-accent);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: #9fb0c4;
+}
+
+.login-points strong { color: #e6edf5; }
+
+.login-form-wrap {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--c-bg);
+}
+
+.login-form {
+  width: 100%;
+  max-width: 360px;
+  padding: 26px 26px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.login-hint {
+  margin: 2px 0 0;
+  font-size: 11.5px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+@media (max-width: 900px) {
+  .login { grid-template-columns: 1fr; }
+  .login-pitch { display: none; }
+}

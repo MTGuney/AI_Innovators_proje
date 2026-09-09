@@ -1,0 +1,31 @@
+.relevance {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.relevance-track {
+  width: 52px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--c-border);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.relevance-fill {
+  display: block;
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.25s ease;
+}
+
+.relevance-strong { background: var(--c-success); }
+.relevance-medium { background: var(--c-warning); }
+.relevance-weak { background: var(--c-text-subtle); }
+
+.relevance-value {
+  color: var(--c-text-muted);
+  font-size: 11px;
+  min-width: 30px;
+}
