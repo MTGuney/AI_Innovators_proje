@@ -14,19 +14,12 @@ public interface IReportRepository
 
     Task<FinancialReport?> GetByDocumentIdAsync(string documentId, CancellationToken ct = default);
 
-    Task<List<FinancialReport>> GetRecentAsync(int limit, CancellationToken ct = default);
-
     Task<FinancialReport> AddAsync(FinancialReport report, CancellationToken ct = default);
 
     Task UpdateAsync(FinancialReport report, CancellationToken ct = default);
 
     Task DeleteAsync(FinancialReport report, CancellationToken ct = default);
 
-    Task<int> CountAsync(CancellationToken ct = default);
-
-    Task<Dictionary<string, int>> CountByYearAsync(CancellationToken ct = default);
-
-    Task<List<string>> GetReportTypesAsync(CancellationToken ct = default);
 }
 
 public class ReportRepository(FinRagDbContext db) : IReportRepository
@@ -84,12 +77,6 @@ public class ReportRepository(FinRagDbContext db) : IReportRepository
         db.Reports.Include(report => report.Company)
             .FirstOrDefaultAsync(report => report.DocumentId == documentId, ct);
 
-    public Task<List<FinancialReport>> GetRecentAsync(int limit, CancellationToken ct = default) =>
-        db.Reports.Include(report => report.Company)
-            .OrderByDescending(report => report.UploadedAt)
-            .Take(limit)
-            .ToListAsync(ct);
-
     public async Task<FinancialReport> AddAsync(
         FinancialReport report, CancellationToken ct = default)
     {
@@ -109,22 +96,4 @@ public class ReportRepository(FinRagDbContext db) : IReportRepository
         db.Reports.Remove(report);
         await db.SaveChangesAsync(ct);
     }
-
-    public Task<int> CountAsync(CancellationToken ct = default) => db.Reports.CountAsync(ct);
-
-    public async Task<Dictionary<string, int>> CountByYearAsync(CancellationToken ct = default)
-    {
-        var grouped = await db.Reports
-            .Where(report => report.Year != null)
-            .GroupBy(report => report.Year!.Value)
-            .Select(group => new { Year = group.Key, Count = group.Count() })
-            .OrderBy(entry => entry.Year)
-            .ToListAsync(ct);
-
-        return grouped.ToDictionary(
-            entry => entry.Year.ToString(), entry => entry.Count);
-    }
-
-    public Task<List<string>> GetReportTypesAsync(CancellationToken ct = default) =>
-        db.Reports.Select(report => report.ReportType).Distinct().OrderBy(type => type).ToListAsync(ct);
 }

@@ -3,18 +3,6 @@
  * ASP.NET Core serialises camelCase, so these match field-for-field.
  */
 
-export interface UserDto {
-  id: string;
-  email: string;
-  displayName: string;
-}
-
-export interface AuthResponse {
-  token: string;
-  expiresAt: string;
-  user: UserDto;
-}
-
 export interface ReportDto {
   id: string;
   title: string;
@@ -114,23 +102,11 @@ export interface ConversationDetailDto {
   messages: MessageDto[];
 }
 
-export interface CompanyUsageDto {
-  company: string;
-  queryCount: number;
-  lastQueriedAt: string | null;
-}
-
-export interface DashboardStatsDto {
-  totalCompanies: number;
-  totalReports: number;
-  indexedDocuments: number;
-  indexedChunks: number;
-  recentUploads: ReportDto[];
-  mostQueriedCompanies: CompanyUsageDto[];
-  reportsByYear: Record<string, number>;
-  reportTypes: string[];
+export interface IndexStatusDto {
   aiServiceHealthy: boolean;
   aiServiceDetail: string | null;
+  indexedDocuments: number;
+  indexedChunks: number;
 }
 
 export interface SearchResponse {

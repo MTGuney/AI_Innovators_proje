@@ -1,19 +1,14 @@
 import { NavLink, Outlet } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import { initials } from '../utils/format';
 import './AppLayout.css';
 
 const NAV_ITEMS = [
-  { to: '/dashboard', label: 'Dashboard', glyph: '▤' },
-  { to: '/reports', label: 'Reports', glyph: '▦' },
-  { to: '/chat', label: 'AI Assistant', glyph: '✦' },
+  { to: '/chat', label: 'Ask', glyph: '✦' },
+  { to: '/reports', label: 'Indexed reports', glyph: '▦' },
   { to: '/compare', label: 'Compare', glyph: '⇄' },
-  { to: '/settings', label: 'Settings', glyph: '⚙' },
+  { to: '/settings', label: 'Pipeline', glyph: '⚙' },
 ];
 
 export function AppLayout() {
-  const { user, logout } = useAuth();
-
   return (
     <div className="shell">
       <aside className="sidebar">
@@ -44,23 +39,6 @@ export function AppLayout() {
           <div className="nav-note">
             Answers are generated locally with Foundry Local. Retrieval is always
             shown alongside the answer.
-          </div>
-
-          <div className="user-row">
-            <span className="avatar" aria-hidden="true">
-              {initials(user?.displayName ?? 'User')}
-            </span>
-            <span className="stack grow" style={{ minWidth: 0 }}>
-              <strong className="user-name">{user?.displayName}</strong>
-              <span className="user-mail">{user?.email}</span>
-            </span>
-            <button
-              type="button"
-              className="btn btn-sm btn-ghost sign-out"
-              onClick={logout}
-            >
-              Sign out
-            </button>
           </div>
         </div>
       </aside>

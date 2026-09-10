@@ -11,9 +11,9 @@ text is sent to a cloud LLM.
 React (Vite + TS)          Browse reports, chat, compare, inspect retrieval
         │
         ▼
-ASP.NET Core 9 API         Auth, report metadata, chat history, business logic
+ASP.NET Core 9 API         Report metadata, chat history, business logic
         │
-        ├── PostgreSQL     Users, companies, reports, conversations, messages
+        ├── PostgreSQL     Companies, reports, conversations, messages
         │
         └── Python AI service (FastAPI)
                   ├── Chunking + embeddings
@@ -133,7 +133,7 @@ cd backend/FinRag.Api
 dotnet run
 ```
 
-Migrations are applied and a demo user is seeded on startup. Swagger is at
+Migrations are applied on startup. Swagger is at
 <http://localhost:5080/swagger>.
 
 ### 6. Start the frontend
@@ -144,11 +144,8 @@ npm install
 npm run dev
 ```
 
-Open <http://localhost:5173> and sign in:
-
-```
-demo@finrag.local / demo12345
-```
+Open <http://localhost:5173>. There is no sign-in — FinRAG is a single-user
+local tool, so it opens straight on the question box.
 
 On the **Reports** page click **Import indexed** once, to bring the documents
 indexed by the CLI into the catalogue.

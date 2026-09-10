@@ -24,7 +24,6 @@ public interface IChatService
 /// </summary>
 public class ChatService(
     IConversationRepository conversations,
-    ICompanyRepository companies,
     IAiServiceClient aiService,
     ILogger<ChatService> logger) : IChatService
 {
@@ -83,15 +82,6 @@ public class ChatService(
 
         await conversations.AddMessagesAsync(
             conversation, [userMessage, assistantMessage], ct);
-
-        // Feed the dashboard's "most queried companies" panel from the
-        // companies actually cited, not from naive keyword matching.
-        var cited = answer.Sources
-            .Select(source => source.Company)
-            .Where(company => !string.IsNullOrWhiteSpace(company))
-            .Select(company => company!)
-            .ToList();
-        await companies.RecordQueryAsync(cited, ct);
 
         logger.LogInformation(
             "Answered in conversation {ConversationId} ({ElapsedMs}ms, {SourceCount} sources).",

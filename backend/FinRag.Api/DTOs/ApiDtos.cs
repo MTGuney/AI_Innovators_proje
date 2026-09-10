@@ -3,23 +3,6 @@ using System.ComponentModel.DataAnnotations;
 namespace FinRag.Api.DTOs;
 
 // --------------------------------------------------------------------- //
-// Auth
-// --------------------------------------------------------------------- //
-
-public record LoginRequest(
-    [Required, EmailAddress] string Email,
-    [Required, MinLength(8)] string Password);
-
-public record RegisterRequest(
-    [Required, EmailAddress] string Email,
-    [Required, MinLength(8)] string Password,
-    [Required, MaxLength(128)] string DisplayName);
-
-public record AuthResponse(string Token, DateTime ExpiresAt, UserDto User);
-
-public record UserDto(Guid Id, string Email, string DisplayName);
-
-// --------------------------------------------------------------------- //
 // Reports
 // --------------------------------------------------------------------- //
 
@@ -106,22 +89,14 @@ public record ConversationDetailDto(
     List<MessageDto> Messages);
 
 // --------------------------------------------------------------------- //
-// Dashboard
+// Index
 // --------------------------------------------------------------------- //
 
-public record CompanyUsageDto(string Company, int QueryCount, DateTime? LastQueriedAt);
-
-public record DashboardStatsDto(
-    int TotalCompanies,
-    int TotalReports,
-    int IndexedDocuments,
-    int IndexedChunks,
-    IReadOnlyList<ReportDto> RecentUploads,
-    IReadOnlyList<CompanyUsageDto> MostQueriedCompanies,
-    IReadOnlyDictionary<string, int> ReportsByYear,
-    IReadOnlyList<string> ReportTypes,
+public record IndexStatusDto(
     bool AiServiceHealthy,
-    string? AiServiceDetail);
+    string? AiServiceDetail,
+    int IndexedDocuments,
+    int IndexedChunks);
 
 // --------------------------------------------------------------------- //
 // Errors

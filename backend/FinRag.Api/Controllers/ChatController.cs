@@ -1,15 +1,12 @@
 using FinRag.Api.DTOs;
-using FinRag.Api.Extensions;
 using FinRag.Api.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinRag.Api.Controllers;
 
 [ApiController]
 [Route("api/chat")]
-[Authorize]
-public class ChatController(IChatService chat) : ControllerBase
+public class ChatController(IChatService chat, LocalUser user) : ControllerBase
 {
     /// <summary>
     /// Ask a question about the indexed reports. Returns the answer together
@@ -20,5 +17,5 @@ public class ChatController(IChatService chat) : ControllerBase
     [ProducesResponseType(typeof(ApiError), StatusCodes.Status503ServiceUnavailable)]
     public async Task<ActionResult<ChatResponse>> Ask(
         [FromBody] ChatRequest request, CancellationToken ct) =>
-        Ok(await chat.AskAsync(User.GetUserId(), request, ct));
+        Ok(await chat.AskAsync(user.Id, request, ct));
 }

@@ -2,26 +2,17 @@
 
 import { api, toQuery } from './apiClient';
 import type {
-  AuthResponse,
   ChatRequestBody,
   ChatResponse,
   ComparisonResponse,
   ConversationDetailDto,
   ConversationSummaryDto,
-  DashboardStatsDto,
+  IndexStatusDto,
   PagedResult,
   ReportDto,
   ReportFilters,
   SearchResponse,
 } from './types';
-
-export const authApi = {
-  login: (email: string, password: string) =>
-    api.post<AuthResponse>('/auth/login', { email, password }),
-
-  register: (email: string, password: string, displayName: string) =>
-    api.post<AuthResponse>('/auth/register', { email, password, displayName }),
-};
 
 export const reportsApi = {
   list: (filters: ReportFilters = {}, signal?: AbortSignal) =>
@@ -71,8 +62,8 @@ export const chatApi = {
   removeConversation: (id: string) => api.delete<void>(`/conversations/${id}`),
 };
 
-export const dashboardApi = {
-  stats: (signal?: AbortSignal) => api.get<DashboardStatsDto>('/dashboard/stats', signal),
+export const indexApi = {
+  status: (signal?: AbortSignal) => api.get<IndexStatusDto>('/index/status', signal),
 };
 
 export const searchApi = {

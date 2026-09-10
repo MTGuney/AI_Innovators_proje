@@ -1,42 +1,26 @@
-import { dashboardApi } from '../services';
+import { indexApi } from '../services';
 import { useAsync } from '../hooks/useAsync';
 import { ErrorState } from '../components/ErrorState';
 import { LoadingState } from '../components/LoadingState';
-import { useAuth } from '../hooks/useAuth';
 
 /**
  * Read-only view of how the system is wired. Tuning values (TOP_K, chunk size,
  * models) are deployment configuration and live in `.env`, not in the UI.
  */
 export function SettingsPage() {
-  const { user } = useAuth();
-  const { data, loading, error, reload } = useAsync((signal) => dashboardApi.stats(signal));
+  const { data, loading, error, reload } = useAsync((signal) => indexApi.status(signal));
 
   return (
     <div className="page">
       <header className="page-head">
         <div className="grow">
-          <h1>Settings</h1>
-          <p className="muted">Account and service status.</p>
+          <h1>Pipeline</h1>
+          <p className="muted">The retrieval index and the services behind it.</p>
         </div>
       </header>
 
-      <section className="card card-pad" style={{ marginBottom: 18 }}>
-        <h2>Account</h2>
-        <dl className="meta-grid">
-          <div>
-            <dt>Name</dt>
-            <dd>{user?.displayName}</dd>
-          </div>
-          <div>
-            <dt>Email</dt>
-            <dd>{user?.email}</dd>
-          </div>
-        </dl>
-      </section>
-
       <section className="card card-pad">
-        <h2>AI service</h2>
+        <h2>Retrieval index</h2>
 
         {loading && <LoadingState label="Checking services..." compact />}
         {error && <ErrorState message={error} onRetry={reload} />}

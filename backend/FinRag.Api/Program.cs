@@ -1,12 +1,9 @@
-using System.Text;
 using FinRag.Api.Configuration;
 using FinRag.Api.Data;
 using FinRag.Api.Middleware;
 using FinRag.Api.Repositories;
 using FinRag.Api.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,18 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.Configure<AiServiceOptions>(
     builder.Configuration.GetSection(AiServiceOptions.SectionName));
-builder.Services.Configure<JwtOptions>(
-    builder.Configuration.GetSection(JwtOptions.SectionName));
-
-var jwt = builder.Configuration.GetSection(JwtOptions.SectionName).Get<JwtOptions>()
-          ?? new JwtOptions();
-
-if (jwt.Secret.Length < 32)
-{
-    // Refuse to start rather than issue tokens signed with a weak key.
-    throw new InvalidOperationException(
-        "Jwt:Secret must be at least 32 characters. Set it via configuration or the JWT_SECRET environment variable.");
-}
 
 // --------------------------------------------------------------------- //
 // Persistence
@@ -44,15 +29,16 @@ builder.Services.AddDbContext<FinRagDbContext>(options =>
 // Application services
 // --------------------------------------------------------------------- //
 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
 builder.Services.AddScoped<IReportRepository, ReportRepository>();
 builder.Services.AddScoped<IConversationRepository, ConversationRepository>();
 
-builder.Services.AddScoped<IAuthService, AuthService>();
+// Single-user tool: one user row owns everything, resolved once at startup.
+builder.Services.AddSingleton<LocalUser>();
+
 builder.Services.AddScoped<IReportService, ReportService>();
 builder.Services.AddScoped<IChatService, ChatService>();
-builder.Services.AddScoped<IDashboardService, DashboardService>();
+builder.Services.AddScoped<IIndexService, IndexService>();
 
 var aiOptions = builder.Configuration.GetSection(AiServiceOptions.SectionName)
                     .Get<AiServiceOptions>() ?? new AiServiceOptions();
@@ -63,29 +49,6 @@ builder.Services.AddHttpClient<IAiServiceClient, AiServiceClient>(client =>
     // Local generation is slow; a short timeout would abort valid answers.
     client.Timeout = TimeSpan.FromSeconds(aiOptions.TimeoutSeconds);
 });
-
-// --------------------------------------------------------------------- //
-// Authentication
-// --------------------------------------------------------------------- //
-
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = jwt.Issuer,
-            ValidAudience = jwt.Audience,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwt.Secret)),
-            ClockSkew = TimeSpan.FromMinutes(1)
-        };
-    });
-
-builder.Services.AddAuthorization();
 
 // --------------------------------------------------------------------- //
 // Web
@@ -118,12 +81,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors(CorsPolicy);
-app.UseAuthentication();
-app.UseAuthorization();
 app.MapControllers();
 
-app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "finrag-backend" }))
-    .AllowAnonymous();
+app.MapGet("/health", () => Results.Ok(new { status = "ok", service = "finrag-backend" }));
 
 // --------------------------------------------------------------------- //
 // Startup

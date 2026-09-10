@@ -1,11 +1,18 @@
 using FinRag.Api.Entities;
+using FinRag.Api.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace FinRag.Api.Data;
 
-/// <summary>Applies migrations and seeds the demo account on startup.</summary>
+/// <summary>
+/// Applies migrations and resolves the single local user on startup.
+/// There is no sign-in: conversations still hang off a user row, so exactly
+/// one is created the first time the app runs and reused from then on.
+/// </summary>
 public static class DbSeeder
 {
+    private const string LocalEmail = "local@finrag.local";
+
     public static async Task InitialiseAsync(
         IServiceProvider services, IConfiguration configuration, ILogger logger)
     {
@@ -15,28 +22,21 @@ public static class DbSeeder
         await db.Database.MigrateAsync();
         logger.LogInformation("Database schema is up to date.");
 
-        if (!configuration.GetValue("Seed:DemoUser", true))
+        var displayName = configuration.GetValue("LocalUser:DisplayName", "Analyst")!;
+
+        // Any pre-existing row wins, so upgrading from the account-based build
+        // keeps the conversations that were already recorded against it.
+        var user = await db.Users.OrderBy(candidate => candidate.CreatedAt)
+            .FirstOrDefaultAsync();
+
+        if (user is null)
         {
-            return;
+            user = new User { Email = LocalEmail, DisplayName = displayName };
+            db.Users.Add(user);
+            await db.SaveChangesAsync();
+            logger.LogInformation("Created the local user {UserId}.", user.Id);
         }
 
-        var email = configuration.GetValue("Seed:DemoUserEmail", "demo@finrag.local")!
-            .ToLowerInvariant();
-
-        if (await db.Users.AnyAsync(user => user.Email == email))
-        {
-            return;
-        }
-
-        var password = configuration.GetValue("Seed:DemoUserPassword", "demo12345")!;
-        db.Users.Add(new User
-        {
-            Email = email,
-            DisplayName = "Demo Analyst",
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(password)
-        });
-
-        await db.SaveChangesAsync();
-        logger.LogInformation("Seeded demo user {Email}.", email);
+        scope.ServiceProvider.GetRequiredService<LocalUser>().Id = user.Id;
     }
 }

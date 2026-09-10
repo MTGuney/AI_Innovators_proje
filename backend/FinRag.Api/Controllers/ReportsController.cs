@@ -1,13 +1,11 @@
 using FinRag.Api.DTOs;
 using FinRag.Api.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinRag.Api.Controllers;
 
 [ApiController]
 [Route("api/reports")]
-[Authorize]
 public class ReportsController(IReportService reports) : ControllerBase
 {
     /// <summary>Browse the report catalogue with search, filters and paging.</summary>

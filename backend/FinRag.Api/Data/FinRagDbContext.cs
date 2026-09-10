@@ -28,7 +28,6 @@ public class FinRagDbContext(DbContextOptions<FinRagDbContext> options) : DbCont
             entity.HasIndex(user => user.Email).IsUnique();
             entity.Property(user => user.Email).HasMaxLength(256).IsRequired();
             entity.Property(user => user.DisplayName).HasMaxLength(128).IsRequired();
-            entity.Property(user => user.PasswordHash).HasMaxLength(256).IsRequired();
         });
 
         modelBuilder.Entity<Company>(entity =>

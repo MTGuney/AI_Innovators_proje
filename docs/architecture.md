@@ -6,8 +6,8 @@ Each service owns one kind of state, and nothing owns two.
 
 | Service | Owns | Does not own |
 |---|---|---|
-| **Python AI service** | The vector index and everything about retrieval | Users, permissions, chat history |
-| **ASP.NET Core backend** | Users, report metadata, conversations | Embeddings, chunking, prompts |
+| **Python AI service** | The vector index and everything about retrieval | Chat history, report catalogue |
+| **ASP.NET Core backend** | Report metadata, conversations | Embeddings, chunking, prompts |
 | **React frontend** | Presentation and interaction | Any business rule |
 
 The split is what keeps the RAG pipeline swappable: the backend depends on the
@@ -203,10 +203,11 @@ catalogue.
 
 ## Security notes
 
-- Passwords are BCrypt-hashed; the plaintext is never stored or logged.
-- Login returns the same message and does the same work for an unknown email as
-  for a wrong password, so the endpoint cannot be used to enumerate accounts.
-- The API refuses to start if `Jwt:Secret` is shorter than 32 characters.
-- Conversations are always loaded scoped to their owner, so an id alone does not
-  grant access.
+- **There is no authentication, by design.** FinRAG is a single-user tool that
+  runs on the operator's own machine; a sign-in step would guard nothing that the
+  filesystem does not already guard. Conversations still hang off one user row,
+  resolved once at startup, because they need an owner — not because there is
+  anyone to tell apart.
+- The API binds to localhost and CORS admits only the local dev origins. Exposing
+  it on a network would mean adding authentication first.
 - Logs record document *names*, counts and timings — never document contents.

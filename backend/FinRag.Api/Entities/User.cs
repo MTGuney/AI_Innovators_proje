@@ -1,6 +1,9 @@
 namespace FinRag.Api.Entities;
 
-/// <summary>An authenticated user of the research assistant.</summary>
+/// <summary>
+/// The owner of a conversation. FinRAG runs as a single local user with no
+/// sign-in, so in practice exactly one of these exists.
+/// </summary>
 public class User
 {
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -8,9 +11,6 @@ public class User
     public string Email { get; set; } = string.Empty;
 
     public string DisplayName { get; set; } = string.Empty;
-
-    /// <summary>BCrypt hash. The plaintext password is never stored or logged.</summary>
-    public string PasswordHash { get; set; } = string.Empty;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

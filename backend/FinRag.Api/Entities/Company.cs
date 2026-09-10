@@ -9,12 +9,6 @@ public class Company
 
     public string? Ticker { get; set; }
 
-    /// <summary>Times this company has been the subject of a question,
-    /// used by the dashboard's "most queried companies" panel.</summary>
-    public int QueryCount { get; set; }
-
-    public DateTime? LastQueriedAt { get; set; }
-
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public ICollection<FinancialReport> Reports { get; set; } = new List<FinancialReport>();

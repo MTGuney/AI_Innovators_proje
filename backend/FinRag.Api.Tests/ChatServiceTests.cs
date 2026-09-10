@@ -11,7 +11,7 @@ namespace FinRag.Api.Tests;
 
 /// <summary>
 /// Covers the chat orchestration: history is forwarded, answers and their
-/// citations are persisted, and company usage is recorded from real citations.
+/// citations are persisted.
 /// </summary>
 public class ChatServiceTests : IDisposable
 {
@@ -28,9 +28,8 @@ public class ChatServiceTests : IDisposable
         _db.Users.Add(new User
         {
             Id = _userId,
-            Email = "demo@finrag.local",
-            DisplayName = "Demo",
-            PasswordHash = "x"
+            Email = "local@finrag.local",
+            DisplayName = "Analyst"
         });
         _db.Companies.Add(new Company { Name = "Apple Inc" });
         _db.SaveChanges();
@@ -59,7 +58,6 @@ public class ChatServiceTests : IDisposable
     private ChatService BuildService(Mock<IAiServiceClient> ai) =>
         new(
             new ConversationRepository(_db),
-            new CompanyRepository(_db),
             ai.Object,
             NullLogger<ChatService>.Instance);
 
@@ -137,20 +135,6 @@ public class ChatServiceTests : IDisposable
 
         Assert.Equal(["Apple Inc"], captured!.Filters!.Companies);
         Assert.Equal([2024], captured.Filters.Years);
-    }
-
-    [Fact]
-    public async Task AskAsync_CountsQueriesAgainstTheCitedCompany()
-    {
-        var ai = new Mock<IAiServiceClient>();
-        ai.Setup(client => client.QueryAsync(It.IsAny<RagQueryRequest>(), It.IsAny<CancellationToken>()))
-          .ReturnsAsync(BuildAnswer());
-
-        await BuildService(ai).AskAsync(_userId, new ChatRequest("Did revenue increase?"));
-
-        var company = await _db.Companies.FirstAsync(c => c.Name == "Apple Inc");
-        Assert.Equal(1, company.QueryCount);
-        Assert.NotNull(company.LastQueriedAt);
     }
 
     [Fact]

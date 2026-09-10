@@ -12,13 +12,6 @@ public interface ICompanyRepository
     Task<Company> GetOrCreateAsync(string name, string? ticker = null, CancellationToken ct = default);
 
     Task<List<Company>> GetAllAsync(CancellationToken ct = default);
-
-    Task<int> CountAsync(CancellationToken ct = default);
-
-    Task<List<Company>> GetMostQueriedAsync(int limit, CancellationToken ct = default);
-
-    /// <summary>Record that a company was the subject of a question.</summary>
-    Task RecordQueryAsync(IEnumerable<string> companyNames, CancellationToken ct = default);
 }
 
 public class CompanyRepository(FinRagDbContext db) : ICompanyRepository
@@ -49,41 +42,4 @@ public class CompanyRepository(FinRagDbContext db) : ICompanyRepository
 
     public Task<List<Company>> GetAllAsync(CancellationToken ct = default) =>
         db.Companies.OrderBy(company => company.Name).ToListAsync(ct);
-
-    public Task<int> CountAsync(CancellationToken ct = default) =>
-        db.Companies.CountAsync(ct);
-
-    public Task<List<Company>> GetMostQueriedAsync(int limit, CancellationToken ct = default) =>
-        db.Companies
-            .Where(company => company.QueryCount > 0)
-            .OrderByDescending(company => company.QueryCount)
-            .ThenByDescending(company => company.LastQueriedAt)
-            .Take(limit)
-            .ToListAsync(ct);
-
-    public async Task RecordQueryAsync(
-        IEnumerable<string> companyNames, CancellationToken ct = default)
-    {
-        var names = companyNames
-            .Where(name => !string.IsNullOrWhiteSpace(name))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        if (names.Count == 0)
-        {
-            return;
-        }
-
-        var companies = await db.Companies
-            .Where(company => names.Contains(company.Name))
-            .ToListAsync(ct);
-
-        foreach (var company in companies)
-        {
-            company.QueryCount++;
-            company.LastQueriedAt = DateTime.UtcNow;
-        }
-
-        await db.SaveChangesAsync(ct);
-    }
 }

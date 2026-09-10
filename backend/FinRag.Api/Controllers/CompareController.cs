@@ -1,13 +1,11 @@
 using FinRag.Api.DTOs;
 using FinRag.Api.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FinRag.Api.Controllers;
 
 [ApiController]
 [Route("api/compare")]
-[Authorize]
 public class CompareController(IAiServiceClient aiService) : ControllerBase
 {
     /// <summary>

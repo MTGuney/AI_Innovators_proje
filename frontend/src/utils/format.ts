@@ -46,12 +46,3 @@ export function formatRelevance(relevance: number): string {
 export function formatNumber(value: number): string {
   return value.toLocaleString();
 }
-
-export function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]!.toUpperCase())
-    .join('');
-}

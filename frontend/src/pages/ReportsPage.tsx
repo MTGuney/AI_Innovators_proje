@@ -29,8 +29,7 @@ export function ReportsPage() {
     [debouncedSearch, filters.company, filters.year, filters.reportType, filters.page],
   );
 
-  // Filter options come from the reports on screen; the dashboard holds the
-  // authoritative corpus-wide lists.
+  // Filter options are derived from the reports currently on screen.
   const { companies, years, reportTypes } = useMemo(() => {
     const items = data?.items ?? [];
     return {

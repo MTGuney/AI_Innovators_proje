@@ -4,7 +4,7 @@ import { formatBytes, formatDate, formatNumber } from '../utils/format';
 import { IndexStatusBadge } from './Badges';
 import './ReportCard.css';
 
-/** Compact card used on the dashboard and in the reports grid view. */
+/** Compact card used in the reports grid view. */
 export function ReportCard({ report }: { report: ReportDto }) {
   return (
     <Link to={`/reports/${report.id}`} className="report-card card">
