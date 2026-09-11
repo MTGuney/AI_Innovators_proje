@@ -63,8 +63,14 @@ class Settings(BaseSettings):
     data_dir: Path = SERVICE_ROOT / "data"
     upload_dir: Path = SERVICE_ROOT / "data" / "uploads"
 
-    # --- Dataset downloader ---
+    # --- Dataset downloaders ---
     sec_user_agent: str = "FinRAG-Research contact@example.com"
+    # Kaggle is a secondary corpus source: annual report PDFs, which give
+    # citations real page numbers rather than the synthetic ones HTML forces.
+    # Credentials are optional -- the downloader also reads ~/.kaggle/kaggle.json.
+    kaggle_dataset: str = "samarthagarwal23/annual-reports"
+    kaggle_username: str = ""
+    kaggle_key: str = ""
 
     @field_validator("chroma_persist_dir", "data_dir", "upload_dir", mode="after")
     @classmethod

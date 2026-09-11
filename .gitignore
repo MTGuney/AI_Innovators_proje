@@ -19,6 +19,8 @@ ai-service/data/raw/*
 !ai-service/data/raw/.gitkeep
 ai-service/data/chroma/
 ai-service/data/uploads/
+# Downloaded Kaggle archives; re-fetchable, and large.
+ai-service/data/kaggle/
 
 # --- .NET ---
 bin/

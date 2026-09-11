@@ -108,6 +108,28 @@ cd ai-service
 .venv/Scripts/python scripts/ingest_reports.py --list            # verify
 ```
 
+#### Optional second source: annual report PDFs from Kaggle
+
+EDGAR is the primary corpus and needs no credentials. Kaggle adds annual report
+**PDFs**, which matter for one specific reason: EDGAR filings are HTML and have
+no pages, so those citations rely on synthetic pagination. A PDF has real page
+numbers, so `Apple Annual Report 2024 · page 32` means what it says.
+
+Kaggle requires an API token even for public datasets. Create one at
+<https://www.kaggle.com/settings> → API → **Create New Token**, then save it to
+`~/.kaggle/kaggle.json` (or set `KAGGLE_USERNAME` / `KAGGLE_KEY` in `.env`).
+
+```bash
+.venv/Scripts/python scripts/download_kaggle_reports.py --inspect   # look first
+.venv/Scripts/python scripts/download_kaggle_reports.py --limit 20  # then fetch
+.venv/Scripts/python scripts/ingest_reports.py
+```
+
+Always run `--inspect` first. It reports the file layout **and probes each PDF
+for a text layer** — a scanned, image-only filing extracts to nothing, and
+`pypdf` will not complain about it. Anything reported as `NO TEXT LAYER` would
+be indexed as empty chunks, so it must be excluded rather than ingested.
+
 Ingestion takes roughly a minute per 60 passages on CPU embeddings; the full
 default corpus is ~3,000 passages, so a cold build takes around 45 minutes.
 Re-running without `--force` is cheap: unchanged files are skipped on a checksum.
@@ -261,7 +283,8 @@ ai-service/            Python RAG service (FastAPI)
   app/llm/             foundry_client.py — the only module that talks to Foundry
   app/services/        rag_service, comparison_service, response_parser
   app/api/             HTTP routes
-  scripts/             download_sec_reports.py, ingest_reports.py
+  scripts/             download_sec_reports.py, download_kaggle_reports.py,
+                       ingest_reports.py
   tests/
 
 backend/FinRag.Api/    ASP.NET Core 9

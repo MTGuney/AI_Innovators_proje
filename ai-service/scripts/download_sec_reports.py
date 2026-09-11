@@ -1,9 +1,12 @@
 """Download real annual reports (10-K filings) from SEC EDGAR.
 
-EDGAR is used instead of a Kaggle dataset because it needs no credentials, is
-freely redistributable, and provides genuine multi-company, multi-year report
-prose -- which is what a RAG system needs (isolated numeric rows are not
-enough).
+EDGAR is the *primary* corpus source because it needs no credentials, is freely
+redistributable, and provides genuine multi-company, multi-year report prose --
+which is what a RAG system needs (isolated numeric rows are not enough).
+
+`download_kaggle_reports.py` adds a second source for what EDGAR cannot give:
+annual reports as PDFs, which carry real page numbers. EDGAR serves HTML, which
+has no pages, so those citations rest on synthetic pagination.
 
 Usage:
     python scripts/download_sec_reports.py --years 2
