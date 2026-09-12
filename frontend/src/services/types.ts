@@ -102,13 +102,6 @@ export interface ConversationDetailDto {
   messages: MessageDto[];
 }
 
-export interface IndexStatusDto {
-  aiServiceHealthy: boolean;
-  aiServiceDetail: string | null;
-  indexedDocuments: number;
-  indexedChunks: number;
-}
-
 export interface SearchResponse {
   question: string;
   topK: number;

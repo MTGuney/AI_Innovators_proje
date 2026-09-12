@@ -5,7 +5,6 @@ const NAV_ITEMS = [
   { to: '/chat', label: 'Ask', glyph: '✦' },
   { to: '/reports', label: 'Indexed reports', glyph: '▦' },
   { to: '/compare', label: 'Compare', glyph: '⇄' },
-  { to: '/settings', label: 'Pipeline', glyph: '⚙' },
 ];
 
 export function AppLayout() {

@@ -195,10 +195,23 @@ FOUNDRY_MODEL=phi-4-mini
 FOUNDRY_EMBEDDING_MODEL=qwen3-embedding-0.6b-cuda-gpu
 ```
 
-> **Verify any replacement model actually produces coherent text.** Some Foundry
-> execution-provider builds are broken — `phi-3.5-mini` on the TensorRT-RTX
-> provider emits token soup, while the same model on CUDA is fine. A quick
-> `foundry chat <model>` is enough to check.
+> **Verify any replacement model actually produces coherent text, and do not
+> trust a provider because it works on another card.** Some Foundry
+> execution-provider builds are broken, and which one is broken varies by GPU.
+> Measured on an RTX 3050 Ti Laptop (4 GB), `phi-3.5-mini` fails on *both* of its
+> GPU builds: the TensorRT-RTX build requests a single 2.5 GB allocation and dies
+> with `out of memory` before emitting a token, and the CUDA build loads cleanly
+> with 307 MiB to spare and then emits token soup (`VIDVIDVIDIAIA`, `hyd hyd hyd`).
+> A quick `foundry chat <model>` catches both.
+
+> **A bigger model is not automatically an upgrade here.** On the same 4 GB card
+> `phi-4-mini` loads (3.6 GB weights, ~107 MiB spare) but takes **~147 s** per
+> question against ~14 s for `qwen2.5-1.5b`, and it overruns `FOUNDRY_MAX_TOKENS`
+> mid-JSON — the reply fails to parse, `key_points` comes back empty and the
+> answer degrades to the raw-text fallback. Raising the cap costs KV cache this
+> card does not have. Note also that the TensorRT build of `qwen2.5-1.5b` holds
+> ~3.4 GB for 1.3 GB of weights, so provider preallocation — not model size — is
+> what actually fills a small card.
 
 ---
 
@@ -302,7 +315,7 @@ frontend/src/          React 19 + TypeScript
 |---|---|
 | `The local model 'X' is not loaded` | Run `foundry model load X`. The HTTP API never auto-loads. |
 | `AI service is currently unavailable` | Foundry Local is not running, or the port changed. Run `foundry server status` and update `FOUNDRY_LOCAL_URL`. |
-| Answers are token soup | The model's execution-provider build is broken. Try the CUDA variant, or a different model. |
+| Answers are token soup | The model's execution-provider build is broken for this GPU. Try another execution provider — but verify it, since the CUDA build is not automatically the good one (see [Choosing models](#choosing-models)) — or switch models. |
 | `out of memory` from the GPU | Lower `MAX_CONTEXT_CHARS` and `FOUNDRY_MAX_TOKENS`, or use a smaller chat model. Close other GPU applications. |
 | `chroma-hnswlib` fails to build | You are on ChromaDB < 1.0 with Python 3.13. The pinned `chromadb==1.5.9` needs no C++ toolchain. |
 | Reports page is empty after CLI ingestion | Click **Import indexed** — the vector index and the catalogue are separate stores. |

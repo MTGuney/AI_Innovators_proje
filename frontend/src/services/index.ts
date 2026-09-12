@@ -7,7 +7,6 @@ import type {
   ComparisonResponse,
   ConversationDetailDto,
   ConversationSummaryDto,
-  IndexStatusDto,
   PagedResult,
   ReportDto,
   ReportFilters,
@@ -60,10 +59,6 @@ export const chatApi = {
     api.get<ConversationDetailDto>(`/conversations/${id}`, signal),
 
   removeConversation: (id: string) => api.delete<void>(`/conversations/${id}`),
-};
-
-export const indexApi = {
-  status: (signal?: AbortSignal) => api.get<IndexStatusDto>('/index/status', signal),
 };
 
 export const searchApi = {
