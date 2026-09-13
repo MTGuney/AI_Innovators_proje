@@ -3,7 +3,7 @@
  *
  * Owns the base URL and the translation of the backend's error envelope into
  * an `ApiError` the UI can display verbatim -- components never touch `fetch`
- * directly. There is no session: FinRAG runs as a single local user.
+ * directly. There is no session: FinAI runs as a single local user.
  */
 
 const BASE_URL: string =

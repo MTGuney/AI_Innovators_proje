@@ -1,5 +1,5 @@
 /**
- * Types mirroring the backend's DTOs (backend/FinRag.Api/DTOs).
+ * Types mirroring the backend's DTOs (backend/FinAi.Api/DTOs).
  * ASP.NET Core serialises camelCase, so these match field-for-field.
  */
 

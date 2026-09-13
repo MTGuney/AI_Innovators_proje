@@ -64,7 +64,7 @@ class Settings(BaseSettings):
     upload_dir: Path = SERVICE_ROOT / "data" / "uploads"
 
     # --- Dataset downloaders ---
-    sec_user_agent: str = "FinRAG-Research contact@example.com"
+    sec_user_agent: str = "FinAI-Research contact@example.com"
     # Kaggle is a secondary corpus source: annual report PDFs, which give
     # citations real page numbers rather than the synthetic ones HTML forces.
     # Credentials are optional -- the downloader also reads ~/.kaggle/kaggle.json.

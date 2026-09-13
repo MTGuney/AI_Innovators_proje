@@ -1,4 +1,4 @@
-# FinRAG — Financial Report RAG Assistant
+# FinAI — Financial Report RAG Assistant
 
 A local-first, retrieval-augmented research assistant for financial reports. Ask
 questions in natural language about real SEC annual reports and get answers that
@@ -151,7 +151,7 @@ single-writer, so the service and the ingestion script cannot hold it at once.
 psql -U postgres -c "CREATE ROLE finrag LOGIN PASSWORD 'finrag';"
 psql -U postgres -c "CREATE DATABASE finrag OWNER finrag;"
 
-cd backend/FinRag.Api
+cd backend/FinAi.Api
 dotnet run
 ```
 
@@ -166,7 +166,7 @@ npm install
 npm run dev
 ```
 
-Open <http://localhost:5173>. There is no sign-in — FinRAG is a single-user
+Open <http://localhost:5173>. There is no sign-in — FinAI is a single-user
 local tool, so it opens straight on the question box.
 
 On the **Reports** page click **Import indexed** once, to bring the documents
@@ -300,7 +300,7 @@ ai-service/            Python RAG service (FastAPI)
                        ingest_reports.py
   tests/
 
-backend/FinRag.Api/    ASP.NET Core 9
+backend/FinAi.Api/    ASP.NET Core 9
   Controllers/ Services/ Repositories/ Data/ Entities/ DTOs/ Middleware/
 
 frontend/src/          React 19 + TypeScript

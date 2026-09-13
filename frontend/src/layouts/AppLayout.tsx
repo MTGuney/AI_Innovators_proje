@@ -14,7 +14,7 @@ export function AppLayout() {
         <div className="brand">
           <span className="brand-mark">FR</span>
           <span className="stack">
-            <strong className="brand-name">FinRAG</strong>
+            <strong className="brand-name">FinAI</strong>
             <span className="brand-sub">Financial Research</span>
           </span>
         </div>

@@ -192,7 +192,7 @@ Browser ──POST /api/reports/upload──► Backend
 
 The backend and AI service must see the uploads directory **at the same absolute
 path**, because the handoff is a path, not a byte stream. Running both on the
-same host satisfies this: the backend writes to `backend/FinRag.Api/uploads` and
+same host satisfies this: the backend writes to `backend/FinAi.Api/uploads` and
 sends that absolute path, which the AI service then opens directly.
 
 Documents indexed by the CLI bypass this flow entirely, which is why
@@ -203,7 +203,7 @@ catalogue.
 
 ## Security notes
 
-- **There is no authentication, by design.** FinRAG is a single-user tool that
+- **There is no authentication, by design.** FinAI is a single-user tool that
   runs on the operator's own machine; a sign-in step would guard nothing that the
   filesystem does not already guard. Conversations still hang off one user row,
   resolved once at startup, because they need an owner — not because there is
